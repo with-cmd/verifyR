@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import requests
 import hashlib
 import hmac
@@ -6,13 +7,11 @@ import json
 from urllib.parse import parse_qsl
 
 app = Flask(__name__)
+CORS(app)  # Разрешает запросы из любого источника
 
-# Твой токен от @BotFather
 BOT_TOKEN = "8661615931:AAHpeEYDJFpHYkH52aVyWhL0KGktGla3PuQ"
-# Твой Telegram ID
 ADMIN_ID = 8592874278
 
-# Валидация подписи Telegram
 def validate_init_data(init_data: str, bot_token: str):
     try:
         pairs = dict(parse_qsl(init_data, strict_parsing=True))
