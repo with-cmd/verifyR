@@ -47,7 +47,11 @@ def verify():
         return jsonify({"error": "Invalid signature"}), 403
 
     # <-- КОД ВЫПОЛНЯЕТСЯ ТОЛЬКО ПОСЛЕ ВСЕХ ПРОВЕРОК
-    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    user_ip = request.headers.get('X-Forwarded-For')
+if not user_ip:
+    user_ip = request.headers.get('X-Real-IP')
+if not user_ip:
+    user_ip = request.remote_addr
 
     admin_text = (
         f"✅ Новая верификация\n"
