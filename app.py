@@ -5,6 +5,8 @@ import hashlib
 import hmac
 import json
 from urllib.parse import parse_qsl
+from werkzeug.middleware.proxy_fix import ProxyFix
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
 app = Flask(__name__)
 CORS(app)  # Разрешает запросы из любого источника
@@ -44,6 +46,9 @@ def verify():
     if not is_valid:
         return jsonify({"error": "Invalid signature"}), 403
 
+    # <-- КОД ВЫПОЛНЯЕТСЯ ТОЛЬКО ПОСЛЕ ВСЕХ ПРОВЕРОК
+    user_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+
     admin_text = (
         f"✅ Новая верификация\n"
         f"👤 Имя: {user.get('first_name', '')}\n"
@@ -51,8 +56,8 @@ def verify():
         f"🆔 ID: {user.get('id')}\n"
         f"📱 User-Agent: {data.get('userAgent', 'неизвестно')}\n"
         f"🖥 Экран: {data.get('screen', 'неизвестно')}\n"
-        f"🌍 Часовой пояс: {data.get('timezone', 'неизвестно')}"
-        f"🌐 IP-адрес: {data.get('ip', 'неизвестно')}"
+        f"🌍 Часовой пояс: {data.get('timezone', 'неизвестно')}\n"
+        f"🌐 IP-адрес: {user_ip}"
     )
 
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
