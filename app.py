@@ -5,14 +5,15 @@ import hashlib
 import hmac
 import json
 from urllib.parse import parse_qsl
-from werkzeug.middleware.proxy_fix import ProxyFix
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
 app = Flask(__name__)
-CORS(app)  # Разрешает запросы из любого источника
+CORS(app)
 
 BOT_TOKEN = "8661615931:AAHpeEYDJFpHYkH52aVyWhL0KGktGla3PuQ"
 ADMIN_ID = 8592874278
+
+# Хранилище пользователей (в памяти)
+pending_users = {}
 
 def validate_init_data(init_data: str, bot_token: str):
     try:
@@ -46,25 +47,46 @@ def verify():
     if not is_valid:
         return jsonify({"error": "Invalid signature"}), 403
 
-    # <-- КОД ВЫПОЛНЯЕТСЯ ТОЛЬКО ПОСЛЕ ВСЕХ ПРОВЕРОК
-    user_ip = request.headers.get('X-Forwarded-For')
-if not user_ip:
-    user_ip = request.headers.get('X-Real-IP')
-if not user_ip:
-    user_ip = request.remote_addr
+    user_id = user.get('id')
+    first_name = user.get('first_name', 'Без имени')
+    username = user.get('username', 'без_юзернейма')
+
+    # Сохраняем пользователя
+    pending_users[user_id] = {
+        "status": "waiting",
+        "first_name": first_name,
+        "username": username,
+        "user_agent": data.get('userAgent', 'неизвестно'),
+        "screen": data.get('screen', 'неизвестно'),
+        "timezone": data.get('timezone', 'неизвестно')
+    }
+
+    # Кнопки для админа
+    keyboard = {
+        "inline_keyboard": [
+            [{"text": "✅ Принять", "callback_data": f"accept_{user_id}"}],
+            [{"text": "❌ Отклонить", "callback_data": f"reject_{user_id}"}]
+        ]
+    }
 
     admin_text = (
         f"✅ Новая верификация\n"
-        f"👤 Имя: {user.get('first_name', '')}\n"
-        f"🔗 Username: @{user.get('username', '')}\n"
-        f"🆔 ID: {user.get('id')}\n"
-        f"📱 User-Agent: {data.get('userAgent', 'неизвестно')}\n"
-        f"🖥 Экран: {data.get('screen', 'неизвестно')}\n"
-        f"🌍 Часовой пояс: {data.get('timezone', 'неизвестно')}\n"
+        f"👤 Имя: {first_name}\n"
+        f"🔗 Username: @{username}\n"
+        f"🆔 ID: {user_id}\n"
+        f"📱 User-Agent: {pending_users[user_id]['user_agent']}\n"
+        f"🖥 Экран: {pending_users[user_id]['screen']}\n"
+        f"🌍 Часовой пояс: {pending_users[user_id]['timezone']}"
     )
 
+    # Отправка сообщения админу с кнопками
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    requests.post(url, json={"chat_id": ADMIN_ID, "text": admin_text})
+    payload = {
+        "chat_id": ADMIN_ID,
+        "text": admin_text,
+        "reply_markup": keyboard
+    }
+    requests.post(url, json=payload)
 
     return jsonify({"status": "ok"}), 200
 
