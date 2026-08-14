@@ -88,17 +88,17 @@ def verify():
     }
 
     # Логирование перед отправкой
-    print(f"=== ОТПРАВКА АДМИНУ ===")
-    print(f"ADMIN_ID: {ADMIN_ID}")
-    print(f"Текст: {admin_text[:50]}...")
-    print(f"Клавиатура: {keyboard}")
+app.logger.info(f"=== ОТПРАВКА АДМИНУ ===")
+app.logger.info(f"ADMIN_ID: {ADMIN_ID}")
+app.logger.info(f"Текст: {admin_text[:50]}...")
+app.logger.info(f"Клавиатура: {keyboard}")
 
-    response = requests.post(url, json=payload)
+response = requests.post(url, json=payload)
 
-    # Логирование после отправки
-    print(f"=== ОТВЕТ TELEGRAM ===")
-    print(f"Статус: {response.status_code}")
-    print(f"Ответ: {response.text}")
+# Логирование после отправки
+app.logger.info(f"=== ОТВЕТ TELEGRAM ===")
+app.logger.info(f"Статус: {response.status_code}")
+app.logger.info(f"Ответ: {response.text}")
 
     return jsonify({"status": "ok"}), 200
 
