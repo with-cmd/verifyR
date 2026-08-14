@@ -86,7 +86,19 @@ def verify():
         "text": admin_text,
         "reply_markup": keyboard
     }
-    requests.post(url, json=payload)
+
+    # Логирование перед отправкой
+    print(f"=== ОТПРАВКА АДМИНУ ===")
+    print(f"ADMIN_ID: {ADMIN_ID}")
+    print(f"Текст: {admin_text[:50]}...")
+    print(f"Клавиатура: {keyboard}")
+
+    response = requests.post(url, json=payload)
+
+    # Логирование после отправки
+    print(f"=== ОТВЕТ TELEGRAM ===")
+    print(f"Статус: {response.status_code}")
+    print(f"Ответ: {response.text}")
 
     return jsonify({"status": "ok"}), 200
 
