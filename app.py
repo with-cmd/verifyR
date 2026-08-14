@@ -61,13 +61,13 @@ def verify():
         "timezone": data.get('timezone', 'неизвестно')
     }
 
-    # Кнопки для админа
-    keyboard = {
-        "inline_keyboard": [
-            [{"text": "✅ Принять", "callback_data": f"accept_{user_id}"}],
-            [{"text": "❌ Отклонить", "callback_data": f"reject_{user_id}"}]
-        ]
-    }
+    # Кнопки для админа (без user_id в callback_data)
+keyboard = {
+    "inline_keyboard": [
+        [{"text": "✅ Принять", "callback_data": "accept"}],
+        [{"text": "❌ Отклонить", "callback_data": "reject"}]
+    ]
+}
 
     admin_text = (
         f"✅ Новая верификация\n"
