@@ -4,6 +4,7 @@ import requests
 import hashlib
 import hmac
 import json
+import sys
 from urllib.parse import parse_qsl
 
 app = Flask(__name__)
@@ -12,7 +13,6 @@ CORS(app)
 BOT_TOKEN = "8661615931:AAHpeEYDJFpHYkH52aVyWhL0KGktGla3PuQ"
 ADMIN_ID = 8592874278
 
-# Хранилище пользователей (в памяти)
 pending_users = {}
 
 def validate_init_data(init_data: str, bot_token: str):
@@ -51,7 +51,6 @@ def verify():
     first_name = user.get('first_name', 'Без имени')
     username = user.get('username', 'без_юзернейма')
 
-    # Сохраняем пользователя
     pending_users[user_id] = {
         "status": "waiting",
         "first_name": first_name,
@@ -61,13 +60,12 @@ def verify():
         "timezone": data.get('timezone', 'неизвестно')
     }
 
-    # Кнопки для админа (без user_id в callback_data)
-keyboard = {
-    "inline_keyboard": [
-        [{"text": "✅ Принять", "callback_data": "accept"}],
-        [{"text": "❌ Отклонить", "callback_data": "reject"}]
-    ]
-}
+    keyboard = {
+        "inline_keyboard": [
+            [{"text": "✅ Принять", "callback_data": "accept"}],
+            [{"text": "❌ Отклонить", "callback_data": "reject"}]
+        ]
+    }
 
     admin_text = (
         f"✅ Новая верификация\n"
@@ -79,7 +77,6 @@ keyboard = {
         f"🌍 Часовой пояс: {pending_users[user_id]['timezone']}"
     )
 
-    # Отправка сообщения админу с кнопками
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     payload = {
         "chat_id": ADMIN_ID,
@@ -87,18 +84,17 @@ keyboard = {
         "reply_markup": keyboard
     }
 
-    # Логирование перед отправкой
-app.logger.info(f"=== ОТПРАВКА АДМИНУ ===")
-app.logger.info(f"ADMIN_ID: {ADMIN_ID}")
-app.logger.info(f"Текст: {admin_text[:50]}...")
-app.logger.info(f"Клавиатура: {keyboard}")
+    # Логирование
+    print("=== ОТПРАВКА АДМИНУ ===", flush=True)
+    print(f"ADMIN_ID: {ADMIN_ID}", flush=True)
+    print(f"Текст: {admin_text[:50]}...", flush=True)
+    print(f"Клавиатура: {keyboard}", flush=True)
 
-response = requests.post(url, json=payload)
+    response = requests.post(url, json=payload)
 
-# Логирование после отправки
-app.logger.info(f"=== ОТВЕТ TELEGRAM ===")
-app.logger.info(f"Статус: {response.status_code}")
-app.logger.info(f"Ответ: {response.text}")
+    print("=== ОТВЕТ TELEGRAM ===", flush=True)
+    print(f"Статус: {response.status_code}", flush=True)
+    print(f"Ответ: {response.text}", flush=True)
 
     return jsonify({"status": "ok"}), 200
 
