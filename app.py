@@ -52,48 +52,55 @@ def verify():
     username = user.get('username', 'без_юзернейма')
 
     pending_users[user_id] = {
-    "status": "waiting",
-    "first_name": first_name,
-    "username": username,
-    "user_agent": data.get('userAgent', 'неизвестно'),
-    "screen": data.get('screen', 'неизвестно'),
-    "timezone": data.get('timezone', 'неизвестно')
-}
+        "status": "waiting",
+        "first_name": first_name,
+        "username": username,
+        "user_agent": data.get('userAgent', 'неизвестно'),
+        "screen": data.get('screen', 'неизвестно'),
+        "timezone": data.get('timezone', 'неизвестно')
+    }
 
-keyboard = {
-    "inline_keyboard": [
-        [{"text": "✅ Принять", "callback_data": f"accept_{user_id}"}],
-        [{"text": "❌ Отклонить", "callback_data": f"reject_{user_id}"}]
-    ]
-}
+    keyboard = {
+        "inline_keyboard": [
+            [{"text": "✅ Принять", "callback_data": f"accept_{user_id}"}],
+            [{"text": "❌ Отклонить", "callback_data": f"reject_{user_id}"}]
+        ]
+    }
 
-admin_text = (
-    f"✅ Новая верификация\n"
-    f"👤 Имя: {first_name}\n"
-    f"🔗 Username: @{username}\n"
-    f"🆔 ID: {user_id}\n"
-    f"📱 User-Agent: {pending_users[user_id]['user_agent']}\n"
-    f"🖥 Экран: {pending_users[user_id]['screen']}\n"
-    f"🌍 Часовой пояс: {pending_users[user_id]['timezone']}"
-)
+    admin_text = (
+        f"✅ Новая верификация\n"
+        f"👤 Имя: {first_name}\n"
+        f"🔗 Username: @{username}\n"
+        f"🆔 ID: {user_id}\n"
+        f"📱 User-Agent: {pending_users[user_id]['user_agent']}\n"
+        f"🖥 Экран: {pending_users[user_id]['screen']}\n"
+        f"🌍 Часовой пояс: {pending_users[user_id]['timezone']}"
+    )
 
-url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-payload = {
-    "chat_id": ADMIN_ID,
-    "text": admin_text,
-    "reply_markup": keyboard
-}
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    payload = {
+        "chat_id": ADMIN_ID,
+        "text": admin_text,
+        "reply_markup": keyboard
+    }
 
-# Логирование
-print("=== ОТПРАВКА АДМИНУ ===", flush=True)
-print(f"ADMIN_ID: {ADMIN_ID}", flush=True)
-print(f"Текст: {admin_text[:50]}...", flush=True)
-print(f"Клавиатура: {keyboard}", flush=True)
+    # Логирование
+    print("=== ОТПРАВКА АДМИНУ ===", flush=True)
+    print(f"ADMIN_ID: {ADMIN_ID}", flush=True)
+    print(f"Текст: {admin_text[:50]}...", flush=True)
+    print(f"Клавиатура: {keyboard}", flush=True)
 
-response = requests.post(url, json=payload)
+    response = requests.post(url, json=payload)
 
-print("=== ОТВЕТ TELEGRAM ===", flush=True)
-print(f"Статус: {response.status_code}", flush=True)
-print(f"Ответ: {response.text}", flush=True)
+    print("=== ОТВЕТ TELEGRAM ===", flush=True)
+    print(f"Статус: {response.status_code}", flush=True)
+    print(f"Ответ: {response.text}", flush=True)
 
-return jsonify({"status": "ok"}), 200
+    return jsonify({"status": "ok"}), 200
+
+@app.route('/')
+def home():
+    return "Сервер работает", 200
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
