@@ -77,30 +77,23 @@ admin_text = (
     f"🌍 Часовой пояс: {pending_users[user_id]['timezone']}"
 )
 
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    payload = {
-        "chat_id": ADMIN_ID,
-        "text": admin_text,
-        "reply_markup": keyboard
-    }
+url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+payload = {
+    "chat_id": ADMIN_ID,
+    "text": admin_text,
+    "reply_markup": keyboard
+}
 
-    # Логирование
-    print("=== ОТПРАВКА АДМИНУ ===", flush=True)
-    print(f"ADMIN_ID: {ADMIN_ID}", flush=True)
-    print(f"Текст: {admin_text[:50]}...", flush=True)
-    print(f"Клавиатура: {keyboard}", flush=True)
+# Логирование
+print("=== ОТПРАВКА АДМИНУ ===", flush=True)
+print(f"ADMIN_ID: {ADMIN_ID}", flush=True)
+print(f"Текст: {admin_text[:50]}...", flush=True)
+print(f"Клавиатура: {keyboard}", flush=True)
 
-    response = requests.post(url, json=payload)
+response = requests.post(url, json=payload)
 
-    print("=== ОТВЕТ TELEGRAM ===", flush=True)
-    print(f"Статус: {response.status_code}", flush=True)
-    print(f"Ответ: {response.text}", flush=True)
+print("=== ОТВЕТ TELEGRAM ===", flush=True)
+print(f"Статус: {response.status_code}", flush=True)
+print(f"Ответ: {response.text}", flush=True)
 
-    return jsonify({"status": "ok"}), 200
-
-@app.route('/')
-def home():
-    return "Сервер работает", 200
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+return jsonify({"status": "ok"}), 200
