@@ -52,30 +52,30 @@ def verify():
     username = user.get('username', 'без_юзернейма')
 
     pending_users[user_id] = {
-        "status": "waiting",
-        "first_name": first_name,
-        "username": username,
-        "user_agent": data.get('userAgent', 'неизвестно'),
-        "screen": data.get('screen', 'неизвестно'),
-        "timezone": data.get('timezone', 'неизвестно')
-    }
+    "status": "waiting",
+    "first_name": first_name,
+    "username": username,
+    "user_agent": data.get('userAgent', 'неизвестно'),
+    "screen": data.get('screen', 'неизвестно'),
+    "timezone": data.get('timezone', 'неизвестно')
+}
 
-    keyboard = {
-        "inline_keyboard": [
-            [{"text": "✅ Принять", "callback_data": "accept"}],
-            [{"text": "❌ Отклонить", "callback_data": "reject"}]
-        ]
-    }
+keyboard = {
+    "inline_keyboard": [
+        [{"text": "✅ Принять", "callback_data": f"accept_{user_id}"}],
+        [{"text": "❌ Отклонить", "callback_data": f"reject_{user_id}"}]
+    ]
+}
 
-    admin_text = (
-        f"✅ Новая верификация\n"
-        f"👤 Имя: {first_name}\n"
-        f"🔗 Username: @{username}\n"
-        f"🆔 ID: {user_id}\n"
-        f"📱 User-Agent: {pending_users[user_id]['user_agent']}\n"
-        f"🖥 Экран: {pending_users[user_id]['screen']}\n"
-        f"🌍 Часовой пояс: {pending_users[user_id]['timezone']}"
-    )
+admin_text = (
+    f"✅ Новая верификация\n"
+    f"👤 Имя: {first_name}\n"
+    f"🔗 Username: @{username}\n"
+    f"🆔 ID: {user_id}\n"
+    f"📱 User-Agent: {pending_users[user_id]['user_agent']}\n"
+    f"🖥 Экран: {pending_users[user_id]['screen']}\n"
+    f"🌍 Часовой пояс: {pending_users[user_id]['timezone']}"
+)
 
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     payload = {
